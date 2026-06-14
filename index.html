@@ -72,6 +72,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-
 .view-toggle button.active{background:#4f46e5;color:#fff;border-color:#4f46e5}
 @media(max-width:768px){.sidebar{position:fixed;z-index:50;height:100%;transform:translateX(-100%);transition:transform .25s;width:80%;max-width:300px}.sidebar.open{transform:translateX(0)}.sidebar.open::after{content:'';position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:-1}.editor-area{flex-direction:column}.preview-pane{border-left:none;border-top:1px solid #e2e8f0;max-height:50vh}.editor-pane textarea{padding:12px 16px;font-size:14px}.preview-pane{padding:12px 16px;font-size:14px}.tb-btn{padding:4px 6px;font-size:11px}.template-grid{grid-template-columns:1fr 1fr 1fr}.toolbar{gap:4px;padding:0 6px}}@media(max-width:480px){.tb-btn{padding:3px 5px;font-size:10px}.view-toggle button{padding:4px 6px;font-size:10px}}
 </style>
+@media print{body>*:not(.main){display:none!important}.main{width:100%!important;height:auto!important;overflow:visible!important}.toolbar,.status-bar,.editor-pane,.sidebar{display:none!important}.preview-pane{display:block!important;width:100%!important;border:none!important;padding:20px!important;overflow:visible!important;max-height:none!important;box-shadow:none!important;background:#fff!important;color:#000!important;font-size:14px!important}.preview-pane pre{break-inside:avoid;page-break-inside:avoid}.preview-pane table{break-inside:avoid;page-break-inside:avoid}.preview-pane img{max-width:100%!important;page-break-inside:avoid}.preview-pane code{font-size:12px!important}.preview-pane h1,.preview-pane h2,.preview-pane h3,.preview-pane h4{page-break-after:avoid}@page{margin:2cm}}
 </head>
 <body>
 <div class="sidebar" id="sidebar"><button id="sidebarClose" style="position:absolute;top:10px;right:10px;background:none;border:none;font-size:18px;cursor:pointer;color:#94a3b8;display:none">x</button>
@@ -100,6 +101,7 @@ Markdown 笔记
 </div>
 <button class="tb-btn" id="saveBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>保存</button>
 <button class="tb-btn" id="exportBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>导出</button>
+<button class="tb-btn" id="pdfBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15h6"/><path d="M12 12v6"/></svg>PDF</button>
 </div>
 <div class="editor-area" id="editorArea">
 <div class="editor-pane" id="editorPane">
@@ -368,6 +370,19 @@ function importNote() {
   };
   input.click();
 }
+function exportPdf() {
+  if (!currentId || !notes[currentId]) { toast('没有打开的笔记'); return; }
+  const savedMode = viewMode;
+  setViewMode('preview');
+  setTimeout(function() {
+    window.print();
+    setTimeout(function() {
+      setViewMode(savedMode);
+    }, 500);
+  }, 300);
+}
+
+
 function init() {
   loadData();
   renderTemplateGrid();
@@ -382,6 +397,7 @@ function init() {
   document.getElementById('importBtn').addEventListener('click', importNote);
   document.getElementById('saveBtn').addEventListener('click', saveCurrentNote);
   document.getElementById('exportBtn').addEventListener('click', exportNote);
+  document.getElementById('pdfBtn').addEventListener('click', exportPdf);
   document.getElementById('editBtn').addEventListener('click', function() { setViewMode('edit'); });
   document.getElementById('splitBtn').addEventListener('click', function() { setViewMode('split'); });
   document.getElementById('previewBtn').addEventListener('click', function() { setViewMode('preview'); });
